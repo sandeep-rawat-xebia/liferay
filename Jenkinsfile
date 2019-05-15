@@ -14,15 +14,16 @@ pipeline {
                       def jarFiles = findFiles(glob: 'plugins/*.jar')
                       def sqlFiles = findFiles(glob: 'scripts/*.sql')
 		      sh 'rm env.properties'
+		      sh "echo '{' >> env.properties"
 		      if(sqlFiles.size() > 0 ){
-			      sh "echo '{\"SQL_CHANGED\":\"TRUE\"}' >> env.properties"
+			      sh "echo '\"SQL_CHANGED\":\"TRUE\",' >> env.properties"
 		      }else{
-			      sh "echo '{\"SQL_CHANGED\":\"FALSE\"}' >> env.properties"
+			      sh "echo '\"SQL_CHANGED\":\"FALSE\",' >> env.properties"
 		      }
 		      if(jarFiles.size() > 0 ){
-			      sh "echo '{\"PLUGINS_CHANGED\":\"TRUE\"}' >> env.properties"
+			      sh "echo '\"PLUGINS_CHANGED\":\"TRUE\",' >> env.properties"
 		      }else{
-			      sh "echo '{\"PLUGINS_CHANGED\":\"FALSE\"}' >> env.properties"
+			      sh "echo '\"PLUGINS_CHANGED\":\"FALSE\",' >> env.properties"
 		      }
 		      plugins = []
 		      pluginNames=''
@@ -35,8 +36,9 @@ pipeline {
 			      }
 			      plugins.add(pluginName)
                       }
-                      sh "echo '{\"APPLICATION_VERSION\":\"${APPLICATION_VERSION}\"}' >> env.properties"
-		      sh "echo '{\"PLUGINS\":\"${pluginNames}\"}' >> env.properties"
+                      sh "echo '\"APPLICATION_VERSION\":\"${APPLICATION_VERSION}\",' >> env.properties"
+		      sh "echo '\"PLUGINS\":\"${pluginNames}\"' >> env.properties"
+		      sh "echo '}' >> env.properties"
 		      archiveArtifacts artifacts: 'env.properties', fingerprint: true
                }
             }
