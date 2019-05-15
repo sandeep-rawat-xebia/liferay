@@ -11,16 +11,17 @@ pipeline {
        stage('Evaluate Changes') {
          steps {
               script {
-                      	jarFiles = sh(script: 'ls plugins|grep jar', returnStdout: true).split()
-                		sqlFiles = sh(script: 'ls scripts|grep sql', returnStdout: true).split()
-                		archiveArtifacts artifacts: 'env.properties', fingerprint: true
-		      if(sqlFiles.size()>0){
+                      jarFiles = findFiles(glob: 'plugins/*.jar')
+                      sqlFiles = findFiles(glob: 'scripts/*.sql')
+		      sh 'rm env.properties'
+		      if(sqlFiles.size() > 0 ){
 			      sh "echo '{\"SQL_CHANGED\":\"TRUE\"}' >> env.properties"
 		      }
-		      if(jarFiles.size()>0){
+		      if(jarFiles.size() > 0 ){
 			      sh "echo '{\"PLUGINS_CHANGED\":\"TRUE\"}' >> env.properties"
 		      }
                       sh "echo '{\"APPLICATION_VERSION\":\"${APPLICATION_VERSION}\"}' >> env.properties"
+		      archiveArtifacts artifacts: 'env.properties', fingerprint: true
                }
             }
        }
