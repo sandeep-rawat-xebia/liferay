@@ -13,16 +13,17 @@ pipeline {
               script {
                       def jarFiles = findFiles(glob: 'plugins/*.jar')
                       def sqlFiles = findFiles(glob: 'scripts/*.sql')
-		      sh 'rm env.properties'
+		      sh 'rm -f env.properties'
+		      sh "echo '{' >> env.properties"
 		      if(sqlFiles.size() > 0 ){
-			      sh "echo '{\"SQL_CHANGED\":\"TRUE\"}' >> env.properties"
+			      sh "echo '\"SQL_CHANGED\":\"TRUE\",' >> env.properties"
 		      }else{
-			      sh "echo '{\"SQL_CHANGED\":\"FALSE\"}' >> env.properties"
+			      sh "echo '\"SQL_CHANGED\":\"FALSE\",' >> env.properties"
 		      }
 		      if(jarFiles.size() > 0 ){
-			      sh "echo '{\"PLUGINS_CHANGED\":\"TRUE\"}' >> env.properties"
+			      sh "echo '\"PLUGINS_CHANGED\":\"TRUE\",' >> env.properties"
 		      }else{
-			      sh "echo '{\"PLUGINS_CHANGED\":\"FALSE\"}' >> env.properties"
+			      sh "echo '\"PLUGINS_CHANGED\":\"FALSE\",' >> env.properties"
 		      }
 		      plugins = []
 		      pluginNames=''
@@ -30,13 +31,14 @@ pipeline {
 			      pluginName = jarFiles[i].name.substring(0, jarFiles[i].name.lastIndexOf('.'))
 			      sh "echo pluginName ${pluginName}"
 			      pluginNames = pluginNames + pluginName;
-			      if(i != 0 && i != jarFiles.size() -1){
+			      if(i != jarFiles.size() -1){
 				      pluginNames = pluginNames + ",";
 			      }
 			      plugins.add(pluginName)
                       }
-                      sh "echo '{\"APPLICATION_VERSION\":\"${APPLICATION_VERSION}\"}' >> env.properties"
-		      sh "echo '{\"PLUGINS\":\"${pluginNames}\"}' >> env.properties"
+                      sh "echo '\"APPLICATION_VERSION\":\"${APPLICATION_VERSION}\",' >> env.properties"
+		      sh "echo '\"PLUGINS\":\"${pluginNames}\"' >> env.properties"
+		      sh "echo '}' >> env.properties"
 		      archiveArtifacts artifacts: 'env.properties', fingerprint: true
                }
             }
@@ -52,13 +54,27 @@ pipeline {
 								sh "base-cp deployit-manifest.xml deployit-manifest-${appName}.xml"
 								sh "sed -i -e 's/APPLICATION_VERSION/${APPLICATION_VERSION}/g' deployit-manifest-${appName}.xml"
 								sh "sed -i -e 's/APPLICATION_NAME/${appName}/g' deployit-manifest-${appName}.xml"
-								//xldCreatePackage artifactsPath: '.', manifestPath: "deployit-manifest-${appName}.xml", darPath: "xldeploy-${appName}.dar"
+								xldCreatePackage artifactsPath: 'plugins', manifestPath: "deployit-manifest-${appName}.xml", darPath: "xldeploy-${appName}.dar"
                 				//xldPublishPackage serverCredentials: 'xldeploy', darPath: "xldeploy-${appName}.dar"
                         }
                     }
                 }
             }
         }
+	    
+	stage('Clean plugins folder') {
+		when {
+                expression { plugins.size() != 0 }
+            	}
+         	steps {
+	        sh "git rm plugins/*.jar"
+		sh "git add ."
+		sh "git commit -m '[Jenkins] clean folder'"
+		sh "git push origin master"
+	 	}
+	}
+	    
+	    
     }
 }
 
