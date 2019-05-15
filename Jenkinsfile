@@ -61,6 +61,20 @@ pipeline {
                 }
             }
         }
+	    
+	stage('Clean plugins folder') {
+		when {
+                expression { plugins.size() != 0 }
+            	}
+         	steps {
+	        sh "git rm plugins/*.jar"
+		sh "git add ."
+		sh "git commit -m '[Jenkins] clean folder'"
+		sh "git push origin master"
+	 	}
+	}
+	    
+	    
     }
 }
 
