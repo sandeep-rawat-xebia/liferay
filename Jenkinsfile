@@ -27,7 +27,7 @@ pipeline {
 		      def plugins = []
 		      def pluginNames=''
 		      for (int i = 0; i < jarFiles.size(); ++i) {
-			      pluginName = jarFiles[i].substring(0, jarFiles[i].lastIndexOf('.'))
+			      pluginName = jarFiles[i].name.substring(0, jarFiles[i].name.lastIndexOf('.'))
 			      pluginNames = pluginNames + pluginName;
 			      if(i != 0 && i != jarFiles.size() -1){
 				      pluginNames = pluginNames + ",";
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     
-                    jarFiles.each { appName ->
+                    plugins.each { appName ->
                       stage("Publish to XL-Deploy ${appName}") {
                 				script {APPLICATION_VERSION = params.APPLICATION_VERSION}
 								sh "cp deployit-manifest.xml deployit-manifest-${appName}.xml"
