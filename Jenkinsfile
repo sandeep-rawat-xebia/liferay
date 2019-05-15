@@ -16,11 +16,26 @@ pipeline {
 		      sh 'rm env.properties'
 		      if(sqlFiles.size() > 0 ){
 			      sh "echo '{\"SQL_CHANGED\":\"TRUE\"}' >> env.properties"
+		      }else{
+			      sh "echo '{\"SQL_CHANGED\":\"FALSE\"}' >> env.properties"
 		      }
 		      if(jarFiles.size() > 0 ){
 			      sh "echo '{\"PLUGINS_CHANGED\":\"TRUE\"}' >> env.properties"
+		      }else{
+			      sh "echo '{\"PLUGINS_CHANGED\":\"FALSE\"}' >> env.properties"
 		      }
+		      def plugins = []
+		      def pluginNames=''
+		      for (int i = 0; i < jarFiles.size(); ++i) {
+			      pluginName = jarFiles[i].substring(0, jarFiles[i].lastIndexOf('.'))
+			      pluginNames = pluginNames + pluginName;
+			      if(i != 0 && i != jarFiles.size() -1){
+				      pluginNames = pluginNames + ",";
+			      }
+			      plugins.add(pluginName)
+                      }
                       sh "echo '{\"APPLICATION_VERSION\":\"${APPLICATION_VERSION}\"}' >> env.properties"
+		      sh "echo '{\"PLUGINS\":\"${pluginNames}\"}' >> env.properties"
 		      archiveArtifacts artifacts: 'env.properties', fingerprint: true
                }
             }
