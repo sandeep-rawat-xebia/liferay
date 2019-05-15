@@ -1,6 +1,6 @@
     
 pipeline {
-    agent { label 'jdeveloper' }
+    agent any
 	
 	parameters {
         string ( defaultValue: "1.0" ,description: 'Version Number to use ?', name : 'APPLICATION_VERSION')
