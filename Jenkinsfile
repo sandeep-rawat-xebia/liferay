@@ -14,7 +14,13 @@ pipeline {
                       	jarFiles = sh(script: 'ls plugins|grep jar', returnStdout: true).split()
                 		sqlFiles = sh(script: 'ls scripts|grep sql', returnStdout: true).split()
                 		archiveArtifacts artifacts: 'env.properties', fingerprint: true
-                		sh "echo '{\"APPLICATION_VERSION\":\"${APPLICATION_VERSION}\"}' >> env.properties"
+		      if(sqlFiles.size()>0){
+			      sh "echo '{\"SQL_CHANGED\":\"TRUE\"}' >> env.properties"
+		      }
+		      if(jarFiles.size()>0){
+			      sh "echo '{\"PLUGINS_CHANGED\":\"TRUE\"}' >> env.properties"
+		      }
+                      sh "echo '{\"APPLICATION_VERSION\":\"${APPLICATION_VERSION}\"}' >> env.properties"
                }
             }
        }
@@ -23,13 +29,7 @@ pipeline {
             steps {
                 script {
                     
-                 	if (params.PLUGINS == 'ALL') {
-             			appNames = allAppNames;
-            		  }else{
-              			appNames =  params.PLUGINS.split(",")
-            		}
-                    
-                    appNames.each { appName ->
+                    jarFiles.each { appName ->
                       stage("Publish to XL-Deploy ${appName}") {
                 				script {APPLICATION_VERSION = params.APPLICATION_VERSION}
 								sh "cp deployit-manifest.xml deployit-manifest-${appName}.xml"
