@@ -67,10 +67,13 @@ pipeline {
                 expression { plugins.size() != 0 }
             	}
          	steps {
-	        sh "git rm plugins/*.jar"
-		sh "git add ."
-		sh "git commit -m '[Jenkins] clean folder'"
-		sh "git push origin master"
+			sshagent (credentials: ['sandeep-rawat-xebia-git']) {
+         	     	sh "git checkout master"
+	            	sh "git rm plugins/*.jar"
+		        sh "git add ."
+		        sh "git commit -m '[Jenkins] clean plugin folder'"
+		        sh "git push origin master"
+         		}
 	 	}
 	}
 	    
