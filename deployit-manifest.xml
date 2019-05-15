@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<udm.DeploymentPackage version="APPLICATION_VERSION" application="Liferay/APPLICATION_NAME">
+  <application />
+  <orchestrator />
+  <deployables>
+	<liferay.JbossWar name="/APPLICATION_NAME" file="/APPLICATION_NAME.jar">
+      <tags />
+      <scanPlaceholders>false</scanPlaceholders>
+      <preScannedPlaceholders>true</preScannedPlaceholders>
+      <timeout>10</timeout>
+      <waitTime>15</waitTime>
+    </liferay.JbossWar>
+  </deployables>
+  <applicationDependencies />
+  <dependencyResolution>LATEST</dependencyResolution>
+  <undeployDependencies>false</undeployDependencies>
+  <templates />
+  <boundTemplates />
+</udm.DeploymentPackage>
