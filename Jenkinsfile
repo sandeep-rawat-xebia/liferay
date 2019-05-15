@@ -13,7 +13,7 @@ pipeline {
               script {
                       def jarFiles = findFiles(glob: 'plugins/*.jar')
                       def sqlFiles = findFiles(glob: 'scripts/*.sql')
-		      sh 'rm env.properties'
+		      sh 'rm -f env.properties'
 		      sh "echo '{' >> env.properties"
 		      if(sqlFiles.size() > 0 ){
 			      sh "echo '\"SQL_CHANGED\":\"TRUE\",' >> env.properties"
