@@ -11,8 +11,8 @@ pipeline {
        stage('Evaluate Changes') {
          steps {
               script {
-                      jarFiles = findFiles(glob: 'plugins/*.jar')
-                      sqlFiles = findFiles(glob: 'scripts/*.sql')
+                      def jarFiles = findFiles(glob: 'plugins/*.jar')
+                      def sqlFiles = findFiles(glob: 'scripts/*.sql')
 		      sh 'rm env.properties'
 		      if(sqlFiles.size() > 0 ){
 			      sh "echo '{\"SQL_CHANGED\":\"TRUE\"}' >> env.properties"
@@ -24,10 +24,11 @@ pipeline {
 		      }else{
 			      sh "echo '{\"PLUGINS_CHANGED\":\"FALSE\"}' >> env.properties"
 		      }
-		      def plugins = []
-		      def pluginNames=''
+		      plugins = []
+		      pluginNames=''
 		      for (int i = 0; i < jarFiles.size(); ++i) {
 			      pluginName = jarFiles[i].name.substring(0, jarFiles[i].name.lastIndexOf('.'))
+			      sh "echo pluginName ${pluginName}"
 			      pluginNames = pluginNames + pluginName;
 			      if(i != 0 && i != jarFiles.size() -1){
 				      pluginNames = pluginNames + ",";
