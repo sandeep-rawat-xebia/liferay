@@ -28,7 +28,7 @@ pipeline {
 		      pluginNames=''
 		      for (int i = 0; i < jarFiles.size(); ++i) {
 			      pluginName = jarFiles[i].name.substring(0, jarFiles[i].name.lastIndexOf('.'))
-			      sh "pluginName ${pluginName}"
+			      sh "echo pluginName ${pluginName}"
 			      pluginNames = pluginNames + pluginName;
 			      if(i != 0 && i != jarFiles.size() -1){
 				      pluginNames = pluginNames + ",";
